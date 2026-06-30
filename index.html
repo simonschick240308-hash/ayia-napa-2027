@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ayia Napa 2027 — Unterkunfts-Vergleich</title>
+<style>
+  :root {
+    --accent: #0EA5A4;
+    --accent-dark: #0B7E7D;
+    --bg: #F7FAFA;
+    --card: #FFFFFF;
+    --text: #15202B;
+    --muted: #5B6B74;
+    --border: #E2E8E8;
+    --green: #1F9D55;
+    --amber: #C77B12;
+    --red: #C0362F;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Inter', system-ui, -apple-system, Segoe UI, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  header.hero {
+    background: linear-gradient(135deg, #0B7E7D 0%, #0EA5A4 55%, #5ED1C9 100%);
+    color: #fff;
+    padding: 48px 24px 36px;
+    text-align: center;
+  }
+  header.hero h1 {
+    margin: 0 0 8px;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    letter-spacing: -0.02em;
+  }
+  header.hero p {
+    margin: 0;
+    opacity: 0.92;
+    font-size: 1rem;
+  }
+  .trip-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 18px;
+  }
+  .trip-meta span {
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .controls {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(247,250,250,0.95);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    justify-content: center;
+  }
+  .controls label {
+    font-size: 0.82rem;
+    color: var(--muted);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-weight: 600;
+  }
+  .controls select, .controls input[type="number"] {
+    font-family: inherit;
+    padding: 7px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #fff;
+    font-size: 0.9rem;
+  }
+  .controls .checkbox-row {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px !important;
+  }
+  .controls .result-count {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 22px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(15,40,40,0.10);
+  }
+  .card .img-wrap {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background: linear-gradient(135deg, #cfe9e7, #8fcfc9);
+  }
+  .card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0B7E7D;
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 12px;
+    font-weight: 600;
+  }
+  .fav-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255,255,255,0.9);
+    border: none;
+    border-radius: 999px;
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .budget-tag {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 999px;
+    color: #fff;
+  }
+  .budget-fits { background: var(--green); }
+  .budget-cheaper { background: #2563EB; }
+  .budget-expensive { background: var(--red); }
+  .budget-unknown { background: #6B7280; }
+
+  .card-body {
+    padding: 16px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+  .card-body h3 {
+    margin: 0;
+    font-size: 1.08rem;
+  }
+  .card-body h3 a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  .card-body h3 a:hover { color: var(--accent-dark); }
+  .source-line {
+    font-size: 0.76rem;
+    color: var(--muted);
+    margin-top: -6px;
+  }
+  .price-line {
+    font-weight: 700;
+    color: var(--accent-dark);
+    font-size: 1rem;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 10px;
+    font-size: 0.85rem;
+    color: var(--text);
+    padding: 10px 0;
+    border-top: 1px dashed var(--border);
+    border-bottom: 1px dashed var(--border);
+  }
+  .stats div { display: flex; gap: 6px; align-items: center; }
+  .note {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .card-actions {
+    margin-top: auto;
+    display: flex;
+    gap: 8px;
+  }
+  .btn {
+    flex: 1;
+    text-align: center;
+    text-decoration: none;
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--accent-dark); }
+
+  footer {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 10px 24px 50px;
+    color: var(--muted);
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+  footer h4 { color: var(--text); margin-bottom: 6px; }
+
+  .empty-state {
+    text-align: center;
+    color: var(--muted);
+    padding: 60px 20px;
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1>Maturareise 2027 — Ayia Napa</h1>
+  <p>Unterkunfts-Vergleich für die Klasse</p>
+  <div class="trip-meta">
+    <span>👥 8 Personen</span>
+    <span>💶 Budget 400–650 €/Nacht (Gruppe)</span>
+    <span>📅 2027</span>
+  </div>
+</header>
+
+<div class="controls">
+  <label>Sortierung
+    <select id="sortSelect">
+      <option value="priceAsc">Preis: günstig → teuer</option>
+      <option value="priceDesc">Preis: teuer → günstig</option>
+      <option value="beach">Entfernung zum Strand</option>
+      <option value="strip">Entfernung zum Strip/Zentrum</option>
+      <option value="bedrooms">Schlafzimmer (meiste zuerst)</option>
+    </select>
+  </label>
+  <label>Max. Preis/Nacht
+    <select id="priceFilter">
+      <option value="">Alle</option>
+      <option value="400">bis 400 €</option>
+      <option value="650">bis 650 €</option>
+      <option value="900">bis 900 €</option>
+    </select>
+  </label>
+  <label class="checkbox-row">
+    <input type="checkbox" id="poolOnly"> Nur mit Pool
+  </label>
+  <label class="checkbox-row">
+    <input type="checkbox" id="favOnly"> Nur Favoriten ★
+  </label>
+  <span class="result-count" id="resultCount"></span>
+</div>
+
+<main>
+  <div class="grid" id="grid"></div>
+  <div class="empty-state" id="emptyState" style="display:none;">Keine Unterkunft passt zu diesen Filtern.</div>
+</main>
+
+<footer>
+  <h4>Hinweise</h4>
+  <p>
+    Diese Liste wurde per Recherche auf Booking.com, CyprusVillas.com und GetawayVillas.com zusammengestellt (Stand: Juni 2026).
+    Preise sind saisonale Richtwerte und können sich je nach Reisedatum stark ändern — <strong>vor jeder Entscheidung den aktuellen Preis & die Verfügbarkeit direkt auf der verlinkten Seite prüfen.</strong>
+    USD/GBP-Preise wurden grob in Euro umgerechnet (≈ 0,92 €/$ bzw. ≈ 1,17 €/£) und sind daher nur Näherungswerte.
+    Entfernungen zum „Strip" (Nightlife-Zone um die Agias Mavris Street) wurden, wo nicht explizit angegeben, aus der Entfernung zum Stadtzentrum abgeleitet und sollten vor Ort/auf Google Maps verifiziert werden.
+  </p>
+  <p>
+    Favoriten (★) werden lokal im Browser gespeichert (localStorage) — nur auf diesem Gerät sichtbar, nicht geteilt.
+  </p>
+  <p>
+    Eigene Unterkünfte (z.B. Villen-Links von euch) lassen sich im <code>listings</code>-Array in <code>data.js</code> ergänzen — siehe README.
+  </p>
+</footer>
+
+<script src="data.js"></script>
+<script>
+  const grid = document.getElementById('grid');
+  const emptyState = document.getElementById('emptyState');
+  const resultCount = document.getElementById('resultCount');
+  const sortSelect = document.getElementById('sortSelect');
+  const priceFilter = document.getElementById('priceFilter');
+  const poolOnly = document.getElementById('poolOnly');
+  const favOnly = document.getElementById('favOnly');
+
+  const FAV_KEY = 'ayianapa2027_favorites';
+  const getFavs = () => JSON.parse(localStorage.getItem(FAV_KEY) || '[]');
+  const setFavs = (favs) => localStorage.setItem(FAV_KEY, JSON.stringify(favs));
+  const toggleFav = (id) => {
+    const favs = getFavs();
+    const idx = favs.indexOf(id);
+    if (idx === -1) favs.push(id); else favs.splice(idx, 1);
+    setFavs(favs);
+    render();
+  };
+
+  function budgetStatus(item) {
+    if (item.priceMinEUR == null) return { cls: 'budget-unknown', label: 'Preis prüfen' };
+    if (item.priceMaxEUR < 400) return { cls: 'budget-cheaper', label: 'günstiger' };
+    if (item.priceMinEUR > 650) return { cls: 'budget-expensive', label: 'über Budget' };
+    return { cls: 'budget-fits', label: 'im Budget' };
+  }
+
+  function card(item) {
+    const favs = getFavs();
+    const isFav = favs.includes(item.id);
+    const bs = budgetStatus(item);
+    const img = item.image
+      ? `<img src="${item.image}" alt="${item.name}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'img-placeholder',innerText:'Bild auf Buchungsseite ansehen'}))">`
+      : `<div class="img-placeholder">Bild auf Buchungsseite ansehen</div>`;
+
+    return `
+    <div class="card">
+      <div class="img-wrap">
+        ${img}
+        <span class="budget-tag ${bs.cls}">${bs.label}</span>
+        <button class="fav-btn" onclick="toggleFav('${item.id}')" title="Favorit">${isFav ? '★' : '☆'}</button>
+      </div>
+      <div class="card-body">
+        <h3><a href="${item.link}" target="_blank" rel="noopener">${item.name} ↗</a></h3>
+        <div class="source-line">${item.type} · Quelle: ${item.source}</div>
+        <div class="price-line">${item.priceLabel}</div>
+        <div class="stats">
+          <div>🛏 ${item.bedrooms ?? '–'} Schlafzimmer</div>
+          <div>🚿 ${item.bathrooms ?? '–'} Badezimmer</div>
+          <div>👥 bis ${item.maxGuests ?? '–'} Gäste</div>
+          <div>🏊 ${item.pool ? 'Pool vorhanden' : 'kein Pool'}</div>
+          <div>🏖 Strand: ${item.beachLabel}</div>
+          <div>🎉 Strip/Zentrum: ${item.stripLabel}</div>
+        </div>
+        ${item.note ? `<div class="note">ℹ️ ${item.note}</div>` : ''}
+        <div class="card-actions">
+          <a class="btn btn-primary" href="${item.link}" target="_blank" rel="noopener">Zur Buchungsseite ↗</a>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function render() {
+    let items = [...listings];
+
+    if (poolOnly.checked) items = items.filter(i => i.pool);
+    if (favOnly.checked) { const favs = getFavs(); items = items.filter(i => favs.includes(i.id)); }
+    const maxPrice = priceFilter.value ? Number(priceFilter.value) : null;
+    if (maxPrice) items = items.filter(i => i.priceMinEUR == null || i.priceMinEUR <= maxPrice);
+
+    const sortKey = sortSelect.value;
+    items.sort((a, b) => {
+      if (sortKey === 'priceAsc') return (a.priceMinEUR ?? Infinity) - (b.priceMinEUR ?? Infinity);
+      if (sortKey === 'priceDesc') return (b.priceMaxEUR ?? -Infinity) - (a.priceMaxEUR ?? -Infinity);
+      if (sortKey === 'beach') return (a.beachM ?? Infinity) - (b.beachM ?? Infinity);
+      if (sortKey === 'strip') return (a.stripM ?? Infinity) - (b.stripM ?? Infinity);
+      if (sortKey === 'bedrooms') return (b.bedrooms ?? 0) - (a.bedrooms ?? 0);
+      return 0;
+    });
+
+    grid.innerHTML = items.map(card).join('');
+    emptyState.style.display = items.length ? 'none' : 'block';
+    resultCount.textContent = `${items.length} von ${listings.length} Unterkünften`;
+  }
+
+  [sortSelect, priceFilter, poolOnly, favOnly].forEach(el => el.addEventListener('input', render));
+  render();
+</script>
+</body>
+</html>
